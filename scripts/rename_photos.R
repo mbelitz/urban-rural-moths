@@ -100,6 +100,7 @@ for(i in 1:length(photo_unlist_numeric)){
   }
 }}
   
+# almost there! ugh!
 
 rename2 <- paste(rename, rist_test_baby$macroCount, number_of_photos, sep = "_")
 photo_unlist_numeric %>% dplyr::between(photo_start_numeric[1], photo_end_numeric[1], )
