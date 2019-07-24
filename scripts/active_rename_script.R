@@ -1,6 +1,7 @@
 # call in function
 source(file = "scripts/rename_photos_function.R") # Funciton takes two parameters
 
+### Three parameters needed for rename_photos function ###
 # 1. drive_ls_path
 # 2. moth_id_dataframe
 # 3. Location where moth was sampled -- must be in ""
@@ -50,7 +51,7 @@ BIVA <- df %>%
 rename_photos(drive_ls_path = "Moth Phenology/Identification Photos/BIVA",
               moth_id_dataframe = BIVA, Location = "BIVA")
 
-# Rename BIVA Photos
+# Rename BOWA Photos
 
 moth_id <- gs_title(x = "Moth Identification")
 df <- gs_read(moth_id)
@@ -72,3 +73,24 @@ DEMI <- df %>%
 rename_photos(drive_ls_path = "Moth Phenology/Identification Photos/DEMI",
               moth_id_dataframe = DEMI, Location = "DEMI")
 
+# Rename COFR Photos
+
+moth_id <- gs_title(x = "Moth Identification")
+df <- gs_read(moth_id)
+
+COFR <- df %>% 
+  dplyr::filter(Location == "COFR")
+
+rename_photos(drive_ls_path = "Moth Phenology/Identification Photos/COFR",
+              moth_id_dataframe = COFR, Location = "COFR")
+
+# Rename JOMA Photos
+
+moth_id <- gs_title(x = "Moth Identification")
+df <- gs_read(moth_id)
+
+JOMA <- df %>% 
+  dplyr::filter(Location == "JOMA")
+
+rename_photos(drive_ls_path = "Moth Phenology/Identification Photos/JOMA",
+              moth_id_dataframe = JOMA, Location = "JOMA")
