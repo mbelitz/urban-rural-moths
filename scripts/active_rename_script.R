@@ -94,3 +94,14 @@ JOMA <- df %>%
 
 rename_photos(drive_ls_path = "Moth Phenology/Identification Photos/JOMA",
               moth_id_dataframe = JOMA, Location = "JOMA")
+
+# Rename AUCA Photos
+
+moth_id <- gs_title(x = "Moth Identification")
+df <- gs_read(moth_id)
+
+AUCA <- df %>% 
+  dplyr::filter(Location == "AUCA")
+
+rename_photos(drive_ls_path = "Moth Phenology/Identification Photos/AUCA",
+              moth_id_dataframe = AUCA, Location = "AUCA")
