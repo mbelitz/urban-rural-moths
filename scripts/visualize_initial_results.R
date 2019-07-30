@@ -11,15 +11,7 @@ counted_moths <- counted_moths %>%
                     yes = "Rural", no = ifelse(location == "BIVA" | location == "BOWA" | location == "DEMI",
                     yes = "Suburban", no = "Urban")))
          
-         
-         
-         
-         {
-    print("Rural") else if(location == "BIVA" | location == "BOWA" | location == "DEMI"){
-      print("Suburban") else {
-        print("Urban")}
-    }
-  })
+        
 
 ## quick figures
 
