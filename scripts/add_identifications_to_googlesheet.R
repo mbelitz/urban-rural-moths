@@ -4,7 +4,7 @@ library(readr)
 library(dplyr)
 
 # Read in Google Sheet to R
-moth_id <- gs_title(x = "Raw Moth Photo Numbers")
+moth_id <- gs_title(x = "Moth Identification")
 df <- gs_read(moth_id)
 
 AUCA_dirs <- drive_ls("Moth Phenology/Identification Photos/AUCA", type = "folder")
