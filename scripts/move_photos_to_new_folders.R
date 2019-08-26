@@ -14,26 +14,15 @@ move_photos <- function(id_folder, site_folder, date, photo_start_num, photo_end
 
 # Examples
 
-move_photos(id_folder = "Erebidae", site_folder = "RIST", 
-            date = "2019-04-07", photo_start_num = 1424, photo_end_num = 1427)
+# move_photos(id_folder = "Erebidae", site_folder = "RIST", 
+#            date = "2019-04-07", photo_start_num = 1424, photo_end_num = 1427)
 
 
 
-move_photos(id_folder = "Notodontidae", site_folder = "AUCA",
-            date = "2019-03-16", photo_start_num = 6971, photo_end_num = 6979)
+# move_photos(id_folder = "Notodontidae", site_folder = "AUCA",
+#            date = "2019-03-16", photo_start_num = 6971, photo_end_num = 6979)
 
-move_photos(id_folder = "Erebidae", site_folder = "PRCR",
-            date = "2019-06-15", photo_start_num = 7268, photo_end_num = 7269)
+# move_photos(id_folder = "Erebidae", site_folder = "PRCR",
+#            date = "2019-06-15", photo_start_num = 7268, photo_end_num = 7269)
 
-
-# Use this part when moving photos to Notodontidae folder
-
-for(i in 6833:6834){
-  drive_mv(file = paste("AUCA_2019-03-16_", i, sep = ""), path = erebidae)
-  
-}
-
-erebidae <- as_dribble("Moth Phenology/Identification Photos/RIST/Erebidae")
-
-drive_ls(path = "Moth Phenology/Identification Photos/AUCA")
 
