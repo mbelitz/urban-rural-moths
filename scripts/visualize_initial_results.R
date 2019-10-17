@@ -7,9 +7,10 @@ counted_moths <- gs_read(adults_counted)
 
 counted_moths <- counted_moths %>% 
   mutate(doy = lubridate::yday(eventDate)) %>% 
-  mutate(ui = ifelse(test = location == "AUCA" | location == "RIST" | location == "AUCA",
+  mutate(ui = ifelse(test = location == "AUCA" | location == "RIST" | location == "PRCR",
                     yes = "Rural", no = ifelse(location == "BIVA" | location == "BOWA" | location == "DEMI",
-                    yes = "Suburban", no = "Urban")))
+                    yes = "Suburban", no = ifelse(location == "BACA" | location == "COFR" | location == "JOMA",
+                    yes = "Urban", no = NA))))
          
         
 
@@ -28,8 +29,7 @@ urbanization_sums <- counted_moths %>%
   summarise(macro = mean(macroMoths), micro = mean(microMoths), total = mean(macroMoths + microMoths))
 
 ggplot(urbanization_sums) + 
-  geom_line(aes(x = doy, y = macro, color = ui)) +
-  xlim(c(70,121))
+  geom_smooth(aes(x = doy, y = macro, color = ui)) 
 
 # macro only 
 
