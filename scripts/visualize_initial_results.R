@@ -20,8 +20,12 @@ individual_sums <- counted_moths %>%
   group_by(location, doy) %>% 
   summarise(macro = sum(macroMoths), micro = sum(microMoths), total = sum(macroMoths)+ sum(microMoths))
 
-ggplot(individual_sums) + 
-  geom_line(aes(x = doy, y = total, color = location))
+indsum_June <- individual_sums %>% 
+  filter(doy<= 175)
+
+ggplot(indsum_June) + 
+  geom_point(aes(x = doy, y = macro, color = location)) +
+  geom_smooth(aes(x = doy, y = macro, color = location), se = FALSE)
 
 
 urbanization_sums <- counted_moths %>% 
