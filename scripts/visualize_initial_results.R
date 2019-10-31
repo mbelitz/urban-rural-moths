@@ -33,7 +33,7 @@ urbanization_sums <- counted_moths %>%
   summarise(macro = mean(macroMoths), micro = mean(microMoths), total = mean(macroMoths + microMoths))
 
 ggplot(urbanization_sums) + 
-  geom_smooth(aes(x = doy, y = macro, color = ui)) +
+  geom_smooth(aes(x = doy, y = macro, color = ui), se = FALSE) +
   geom_point(aes(x = doy, y = macro, color = ui)) 
 
 # macro only 
