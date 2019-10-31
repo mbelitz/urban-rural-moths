@@ -38,17 +38,16 @@ ggplot(urbanization_sums) +
 
 # macro only 
 
-mar_apr_sum <- counted_moths %>% 
-  filter(doy <= 121) %>% 
+mar_may_sum <- counted_moths %>% 
+  filter(doy <= 175) %>% 
   group_by(location, doy) %>% 
   summarise(macro = mean(macroMoths), micro = mean(microMoths), total = mean(macroMoths + microMoths))
 
-urb_mar_apr_sum <- counted_moths %>% 
-  filter(doy <= 121) %>% 
+urb_mar_may_sum <- counted_moths %>% 
+  filter(doy <= 175) %>% 
   group_by(ui, doy) %>% 
   summarise(macro = mean(macroMoths), micro = mean(microMoths), total = mean(macroMoths + microMoths))
 
-
 ggplot() + 
-  geom_point(data = mar_apr_sum, aes(x = doy, y = macro, color = location)) +
-  geom_smooth(data = urb_mar_apr_sum, aes(x = doy, y = macro, color = ui))
+  geom_text(data = mar_may_sum, aes(x = doy, y = macro, label = location)) +
+  geom_smooth(data = urb_mar_may_sum, aes(x = doy, y = macro, color = ui), se = FALSE)
