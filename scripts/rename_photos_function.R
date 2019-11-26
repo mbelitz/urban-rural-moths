@@ -43,12 +43,15 @@ rename_photos <- function(drive_ls_path, moth_id_dataframe, Location){
                                     no = photoEnd_number)) %>% 
     mutate(num_of_photos = photoEnd_number - photoStart_number + 1)
   
+  new_moths <- moth_id_df %>% 
+    dplyr::filter(is.na(Renamed))
+  
   for(i in 1:nrow(b)){
-    for(j in 1:nrow(moth_id_df)){  
-      ifelse(b$photo_number[i] >= moth_id_df$photoStart_number[j] & 
-               b$photo_number[i] <= moth_id_df$photoEnd_number[j], 
-             drive_mv(file = as_id(a$id[i]), paste(moth_id_df$Location[j], 
-                                                   moth_id_df$eventDate[j],
+    for(j in 1:nrow(new_moths)){  
+      ifelse(b$photo_number[i] >= new_moths$photoStart_number[j] & 
+               b$photo_number[i] <= new_moths$photoEnd_number[j], 
+             drive_mv(file = as_id(a$id[i]), paste(new_moths$Location[j], 
+                                                   new_moths$eventDate[j],
                                                    b$photo_number[i], sep = "_")),
              print("Skipping to next iteration"))
     }}
