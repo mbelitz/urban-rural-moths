@@ -9,7 +9,7 @@ counted_moths <- gs_read(adults_counted)
 
 counted_moths <- counted_moths %>% 
   mutate(doy = lubridate::yday(eventDate)) %>% 
-  mutate(ui = ifelse(test = location == "AUCA" | location == "RIST" | location == "PRCR",
+  mutate(Site = ifelse(test = location == "AUCA" | location == "RIST" | location == "PRCR",
                     yes = "Rural", no = ifelse(location == "BIVA" | location == "BOWA" | location == "DEMI",
                     yes = "Suburban", no = ifelse(location == "BACA" | location == "COFR" | location == "JOMA",
                     yes = "Urban", no = NA))))
@@ -31,12 +31,12 @@ ggplot(indsum_June) +
 
 
 urbanization_sums <- counted_moths %>% 
-  group_by(ui, doy) %>% 
+  group_by(Site, doy) %>% 
   summarise(macro = mean(macroMoths), micro = mean(microMoths), total = mean(macroMoths + microMoths))
 
 ggplot(urbanization_sums) + 
-  geom_smooth(aes(x = doy, y = macro, color = ui), se = FALSE) +
-  geom_point(aes(x = doy, y = macro, color = ui)) 
+  geom_smooth(aes(x = doy, y = macro, color = Site), se = FALSE) +
+  geom_point(aes(x = doy, y = macro, color = Site)) 
 
 # macro only 
 
@@ -46,10 +46,24 @@ mar_may_sum <- counted_moths %>%
   summarise(macro = mean(macroMoths), micro = mean(microMoths), total = mean(macroMoths + microMoths))
 
 urb_mar_may_sum <- counted_moths %>% 
-  filter(doy <= 175) %>% 
-  group_by(ui, doy) %>% 
+  filter(doy <= 171) %>% 
+  group_by(Site, doy) %>% 
   summarise(macro = mean(macroMoths), micro = mean(microMoths), total = mean(macroMoths + microMoths))
 
 ggplot() + 
-  geom_text(data = mar_may_sum, aes(x = doy, y = macro, label = location)) +
-  geom_smooth(data = urb_mar_may_sum, aes(x = doy, y = macro, color = ui), se = FALSE)
+  geom_point(data = urb_mar_may_sum, aes(x = doy, y = macro, color = Site)) +
+  geom_smooth(data = urb_mar_may_sum, aes(x = doy, y = macro, color = Site)
+              ,method = "loess", se = FALSE)
+
+empirical <- ggplot(urbanization_sums) + 
+  geom_smooth(aes(x = doy, y = macro, color = Site), size = 1.25, se = FALSE) +
+  geom_point(aes(x = doy, y = macro, color = Site)) + 
+  labs(x = "Day of year", y = "Mean Macro-moths") +
+  scale_y_continuous(expand = c(0,0), limits = c(0,35)) +
+  ggtitle("Observed") + 
+  scale_color_viridis_d() +
+  theme_grey() +
+  theme(legend.position = "right")
+
+empirical
+
