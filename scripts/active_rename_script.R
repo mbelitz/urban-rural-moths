@@ -8,7 +8,7 @@ source(file = "scripts/rename_photos_function.R") # Funciton takes two parameter
 
 # Rename RIST Photos
 
-moth_id <- gs_title(x = "Moth Identification")
+moth_id <-gs_title(x = "Moth Identification")
 df <- gs_read(moth_id)
 
 RIST <- df %>% 
@@ -20,8 +20,8 @@ rename_photos(drive_ls_path = "Moth Phenology/photos_to_rename/RIST",
 
 ## RENAME BACA PHOTOS
 
-moth_id <- gs_title(x = "Moth Identification")
-df <- gs_read(moth_id)
+moth_id <- drive_get("Moth Identification")
+df <- sheets_read(moth_id)
 
 BACA <- df %>% 
   dplyr::filter(Location == "BACA")
@@ -31,8 +31,8 @@ rename_photos(drive_ls_path = "Moth Phenology/photos_to_rename/BACA",
 
 ## RENAME PRCR Photos
 
-moth_id <- gs_title(x = "Moth Identification")
-df <- gs_read(moth_id)
+moth_id <- drive_get("Moth Identification")
+df <- sheets_read(moth_id)
 
 PRCR <- df %>% 
   dplyr::filter(Location == "PRCR")
@@ -42,8 +42,8 @@ rename_photos(drive_ls_path = "Moth Phenology/photos_to_rename/PRCR",
 
 # Rename BIVA Photos
 
-moth_id <- gs_title(x = "Moth Identification")
-df <- gs_read(moth_id)
+moth_id <- drive_get("Moth Identification")
+df <- sheets_read(moth_id)
 
 BIVA <- df %>% 
   dplyr::filter(Location == "BIVA")
@@ -53,8 +53,8 @@ rename_photos(drive_ls_path = "Moth Phenology/photos_to_rename/BIVA",
 
 # Rename BOWA Photos
 
-moth_id <- gs_title(x = "Moth Identification")
-df <- gs_read(moth_id)
+moth_id <- drive_get("Moth Identification")
+df <- sheets_read(moth_id)
 
 BOWA <- df %>% 
   dplyr::filter(Location == "BOWA")
@@ -64,8 +64,8 @@ rename_photos(drive_ls_path = "Moth Phenology/photos_to_rename/BOWA",
 
 # Rename DEMI Photos
 
-moth_id <- gs_title(x = "Moth Identification")
-df <- gs_read(moth_id)
+moth_id <- drive_get("Moth Identification")
+df <- sheets_read(moth_id)
 
 DEMI <- df %>% 
   dplyr::filter(Location == "DEMI")
@@ -75,8 +75,8 @@ rename_photos(drive_ls_path = "Moth Phenology/photos_to_rename/DEMI",
 
 # Rename COFR Photos
 
-moth_id <- gs_title(x = "Moth Identification")
-df <- gs_read(moth_id)
+moth_id <- drive_get("Moth Identification")
+df <- sheets_read(moth_id)
 
 COFR <- df %>% 
   dplyr::filter(Location == "COFR")
@@ -86,8 +86,8 @@ rename_photos(drive_ls_path = "Moth Phenology/photos_to_rename/COFR",
 
 # Rename JOMA Photos
 
-moth_id <- gs_title(x = "Moth Identification")
-df <- gs_read(moth_id)
+moth_id <- drive_get("Moth Identification")
+df <- sheets_read(moth_id)
 
 JOMA <- df %>% 
   dplyr::filter(Location == "JOMA")
@@ -97,8 +97,8 @@ rename_photos(drive_ls_path = "Moth Phenology/photos_to_rename/JOMA",
 
 # Rename AUCA Photos
 
-moth_id <- gs_title(x = "Moth Identification")
-df <- gs_read(moth_id)
+moth_id <- drive_get("Moth Identification")
+df <- sheets_read(moth_id)
 
 AUCA <- df %>% 
   dplyr::filter(Location == "AUCA")
