@@ -8,8 +8,8 @@ source(file = "scripts/rename_photos_function.R") # Funciton takes two parameter
 
 # Rename RIST Photos
 
-moth_id <-gs_title(x = "Moth Identification")
-df <- gs_read(moth_id)
+moth_id <-drive_get(x = "Moth Identification")
+df <- sheets_read(moth_id)
 
 RIST <- df %>% 
   dplyr::filter(Location == "RIST")
