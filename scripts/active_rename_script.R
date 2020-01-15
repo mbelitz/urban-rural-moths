@@ -8,7 +8,7 @@ source(file = "scripts/rename_photos_function.R") # Funciton takes two parameter
 
 # Rename RIST Photos
 
-moth_id <-drive_get(x = "Moth Identification")
+moth_id <-drive_get("Moth Identification")
 df <- sheets_read(moth_id)
 
 RIST <- df %>% 
