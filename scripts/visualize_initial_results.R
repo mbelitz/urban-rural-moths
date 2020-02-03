@@ -1,11 +1,11 @@
 # load libraries
 
-library(googlesheets)
+library(googlesheets4)
 library(dplyr)
 library(ggplot2)
 
-adults_counted <- gs_title(x = "Adult Moth Datasheet")
-counted_moths <- gs_read(adults_counted)
+adults_counted <- drive_get("Adult Moth Datasheet")
+counted_moths <- sheets_read(adults_counted)
 
 counted_moths <- counted_moths %>% 
   mutate(doy = lubridate::yday(eventDate)) %>% 
