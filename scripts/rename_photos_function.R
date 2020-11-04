@@ -23,6 +23,11 @@ rename_photos <- function(drive_ls_path, moth_id_dataframe, Location){
                                  no = photo_number))
   
   a <- a %>% 
+    mutate(photo_number = ifelse(test = grepl(pattern = "DSC", name),
+                                 yes = as.numeric(sub(".JPG*", "", sub("DSC", "", name))),
+                                 no = photo_number))
+  
+  a <- a %>% 
     mutate(photo_number = ifelse(test = is.na(photo_number),
                                  yes = tools::file_path_sans_ext(name),
                                  no = photo_number))
@@ -42,6 +47,16 @@ rename_photos <- function(drive_ls_path, moth_id_dataframe, Location){
                                     yes = as.numeric(sub(".JPG*", "", sub("IMG_", "", photoEnd))),
                                     no = photoEnd_number)) %>% 
     mutate(num_of_photos = photoEnd_number - photoStart_number + 1)
+  
+  moth_id_df <- moth_id_df %>% 
+    mutate(photoStart_number = ifelse(test = is.na(photoStart_number),
+                                      yes = as.numeric(sub(".JPG*", "", sub("DSC", "", photoStart))),
+                                      no = photoStart_number)) %>% 
+    mutate(photoEnd_number = ifelse(test = is.na(photoEnd_number),
+                                    yes = as.numeric(sub(".JPG*", "", sub("DSC", "", photoEnd))),
+                                    no = photoEnd_number)) %>% 
+    mutate(num_of_photos = photoEnd_number - photoStart_number + 1)
+  
   
   new_moths <- moth_id_df %>% 
     dplyr::filter(is.na(Renamed))
