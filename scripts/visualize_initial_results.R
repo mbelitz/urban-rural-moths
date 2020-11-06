@@ -22,12 +22,20 @@ individual_sums <- counted_moths %>%
   group_by(location, doy) %>% 
   summarise(macro = sum(macroMoths), micro = sum(microMoths), total = sum(macroMoths)+ sum(microMoths))
 
-indsum_June <- individual_sums %>% 
-  filter(doy<= 175)
+indsum_June <- individual_sums
 
 ggplot(indsum_June) + 
   geom_point(aes(x = doy, y = macro, color = location)) +
   geom_smooth(aes(x = doy, y = macro, color = location), se = FALSE)
+
+indsum_June <- indsum_June %>% 
+  mutate(urban = case_when(location == "AUCA" | location == "RIST" | location == "PRCR" ~ "Rural",
+                         location == "BACA" | location == "JOMA" | location == "COFR" ~ "Urban",
+                         location == "DEMI" | location == "BIVA" | location == "BOWA" ~ "Suburban"))
+
+ggplot(indsum_June) + 
+  geom_point(aes(x = doy, y = macro, color = location)) +
+  geom_smooth(aes(x = doy, y = macro, color = urban), se = FALSE)
 
 
 urbanization_sums <- counted_moths %>% 
