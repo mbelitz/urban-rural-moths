@@ -42,11 +42,12 @@ gradient <- jdf2 %>%
             mean_rh = mean(rh_diff),
             mean_hsi = mean(hsi_diff))
 
+baca.df <- data.frame(SITE.y = "BACA", mean_temp = 0, mean_rh = 0, mean_hsi = 0)
+
+gradient2 <- rbind(baca.df, gradient)
 
 
-
-
-
+write.csv(x = gradient2, file = "outputs/temp_gradient.csv", row.names = F)
 
 
 
