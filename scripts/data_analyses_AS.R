@@ -28,16 +28,16 @@ TukeyHSD(tenth.anova)
 
 # Now let's add in the Urbanization gradient from GIS DATA
 urb_data <- read.csv("data_products/urbanization_gradient.csv")
-pheno_data_urb <- left_join(pheno_data, urb_data)
+pheno_data_urb <- left_join(pheno_data, urb_data, by = "Site")
 
 ggplot(pheno_data_urb, aes(x = Dev_10, y = tenth)) + 
   geom_point(mapping = aes(color = Class)) + 
   geom_smooth(mapping = aes(), method = 'lm')
 
-tenth.lm <- lm(formula = fifty ~ Dev_10, data = pheno_data_urb)
+tenth.lm <- lm(formula = tenth ~ Dev_10, data = pheno_data_urb)
 summary(tenth.lm)  
 
-## Try to see if you can do this on your own for the for tenth and fiftieth percentiles
+## Try to see if you can do this on your own for the fiftieth and nintieth percentiles
 ## FOr both annovas and lm 
 ## What do these results mean?
 
