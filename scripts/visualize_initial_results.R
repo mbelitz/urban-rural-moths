@@ -29,13 +29,25 @@ ggplot(indsum_June) +
   geom_smooth(aes(x = doy, y = macro, color = location), se = FALSE)
 
 indsum_June <- indsum_June %>% 
-  mutate(urban = case_when(location == "AUCA" | location == "RIST" | location == "PRCR" ~ "Rural",
+  mutate(Class = case_when(location == "AUCA" | location == "RIST" | location == "PRCR" ~ "Rural",
                          location == "BACA" | location == "JOMA" | location == "COFR" ~ "Urban",
                          location == "DEMI" | location == "BIVA" | location == "BOWA" ~ "Suburban"))
 
-ggplot(indsum_June) + 
-  geom_point(aes(x = doy, y = macro, color = location)) +
-  geom_smooth(aes(x = doy, y = macro, color = urban), se = FALSE)
+ggplot(indsum_June, mapping = aes(x = doy, y = macro, color = location)) +
+  geom_smooth(se = F, formula = y ~ s(x), method = "gam") + 
+  theme_classic() +
+  facet_wrap(~ Class)
+
+
+indsum_Aug <- indsum_June %>% 
+  filter(doy <= 243)
+
+ggplot(indsum_Aug, mapping = aes(x = doy, y = macro, color = location)) +
+  geom_smooth(se = T, formula = y ~ s(x), method = "gam", mapping = aes(fill = location)) + 
+  theme_classic() +
+  facet_wrap(~ Class)
+
+ggsave(filename = "outputs/adults.png")
 
 
 urbanization_sums <- counted_moths %>% 

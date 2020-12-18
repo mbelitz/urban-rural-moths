@@ -51,34 +51,55 @@ site_gam <- function(site){
 }
 
 #RURAL SITEs
-auca_gam <- site_gam(site = "AUCA")
+auca_gam <- site_gam(site = "AUCA") %>% 
+  mutate(Site = "AUCA", Class = "Rural")
 plot(auca_gam)
 
-rist_gam <- site_gam(site = "RIST")
+rist_gam <- site_gam(site = "RIST")%>% 
+  mutate(Site = "RIST", Class = "Rural")
 plot(rist_gam)
 
-prcr_gam <- site_gam(site = "PRCR")
+prcr_gam <- site_gam(site = "PRCR")%>% 
+  mutate(Site = "PRCR", Class = "Rural")
 plot(prcr_gam)
 
 #Suburban SItes
-bowa_gam <- site_gam(site = "BOWA")
+bowa_gam <- site_gam(site = "BOWA")%>% 
+  mutate(Site = "BOWA", Class = "Suburban")
 plot(bowa_gam)
 
-biva_gam <- site_gam(site = "BIVA")
+biva_gam <- site_gam(site = "BIVA")%>% 
+  mutate(Site = "BIVA", Class = "Suburban")
 plot(biva_gam)
 
-demi_gam <- site_gam(site = "DEMI")
+demi_gam <- site_gam(site = "DEMI")%>% 
+  mutate(Site = "DEMI", Class = "Suburban")
 plot(demi_gam)
 
 # Urban sites
-baca_gam <- site_gam(site = "BACA")
+baca_gam <- site_gam(site = "BACA") %>% 
+  mutate(Site = "BACA", Class = "Urban")
 plot(baca_gam)
 
-cofr_gam <- site_gam(site = "COFR")
+cofr_gam <- site_gam(site = "COFR") %>% 
+  mutate(Site = "COFR", Class = "Urban")
 plot(cofr_gam)
 
-joma_gam <- site_gam(site = "JOMA")
+joma_gam <- site_gam(site = "JOMA")%>% 
+  mutate(Site = "JOMA", Class = "Urban")
 plot(joma_gam)
+
+## combine into single dataset
+total_gam <- rbind(joma_gam, baca_gam, cofr_gam,
+                   demi_gam, bowa_gam, biva_gam,
+                   auca_gam, prcr_gam, rist_gam)
+
+
+ggplot(total_gam, mapping = aes(x = doy2, y = avg_mass, color = Site)) +
+  geom_smooth(se = F, formula = y ~ s(x, bs = "cc"), method = "gam") + 
+  theme_classic() +
+  facet_wrap(~Class)
+
 
 ## MAKE PHENOLOGY ESTIMATES
 #' function to make phenoestimates from gam
