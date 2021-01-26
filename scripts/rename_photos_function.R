@@ -13,6 +13,10 @@ rename_photos <- function(drive_ls_path, moth_id_dataframe, Location){
                                  no = NA))
   
   a <- a %>% 
+    mutate(photo_number = ifelse(test = grepl(pattern = "DSC", name),
+                                 yes = as.numeric(sub(".JPG*", "", sub("DSC", "", name))),
+                                 no = photo_number))
+  a <- a %>% 
     mutate(photo_number = ifelse(test = grepl(pattern = "DSCN", name),
                                  yes = as.numeric(sub(".JPG*", "", sub("DSCN", "", name))),
                                  no = photo_number))
@@ -20,11 +24,6 @@ rename_photos <- function(drive_ls_path, moth_id_dataframe, Location){
   a <- a %>% 
     mutate(photo_number = ifelse(test = grepl(pattern = "IMG", name),
                                  yes = as.numeric(sub(".JPG*", "", sub("IMG_", "", name))),
-                                 no = photo_number))
-  
-  a <- a %>% 
-    mutate(photo_number = ifelse(test = grepl(pattern = "DSC", name),
-                                 yes = as.numeric(sub(".JPG*", "", sub("DSC", "", name))),
                                  no = photo_number))
   
   a <- a %>% 
