@@ -5,7 +5,7 @@ library(dplyr)
 library(ggplot2)
 
 adults_counted <- drive_get("Adult Moth Datasheet")
-counted_moths <- sheets_read(adults_counted)
+counted_moths <- read_sheet(adults_counted)
 
 counted_moths <- counted_moths %>% 
   mutate(doy = lubridate::yday(eventDate)) %>% 
@@ -22,30 +22,45 @@ individual_sums <- counted_moths %>%
   group_by(location, doy) %>% 
   summarise(macro = sum(macroMoths), micro = sum(microMoths), total = sum(macroMoths)+ sum(microMoths))
 
-indsum_June <- individual_sums
-
-ggplot(indsum_June) + 
+ggplot(individual_sums) + 
   geom_point(aes(x = doy, y = macro, color = location)) +
   geom_smooth(aes(x = doy, y = macro, color = location), se = FALSE)
 
-indsum_June <- indsum_June %>% 
+indsums <- individual_sums %>% 
   mutate(Class = case_when(location == "AUCA" | location == "RIST" | location == "PRCR" ~ "Rural",
                          location == "BACA" | location == "JOMA" | location == "COFR" ~ "Urban",
                          location == "DEMI" | location == "BIVA" | location == "BOWA" ~ "Suburban"))
 
-ggplot(indsum_June, mapping = aes(x = doy, y = macro, color = location)) +
+ggplot(indsums, mapping = aes(x = doy, y = macro, color = location)) +
   geom_smooth(se = F, formula = y ~ s(x), method = "gam") + 
   theme_classic() +
   facet_wrap(~ Class)
 
 
-indsum_Aug <- indsum_June %>% 
-  filter(doy <= 243)
+ggplot(indsums, mapping = aes(x = doy, y = macro, color = location)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(se = F, formula = y ~ s(x), method = "gam") + 
+  labs(x = "Day of year", y = "Adults moths") +
+  theme_classic() +
+  theme(legend.position = "none") +
+  facet_wrap(~ Class)
 
-ggplot(indsum_Aug, mapping = aes(x = doy, y = macro, color = location)) +
-  geom_smooth(se = T, formula = y ~ s(x), method = "gam", mapping = aes(fill = location)) + 
+ggsave(filename = "outputs/adults.jpg", width = 5, height = 2.5)
+
+ggplot(indsums, mapping = aes(x = doy, y = macro, color = location)) +
+  geom_point(alpha = 0.3) +
+  geom_line() + 
+  geom_smooth(se = F, formula = y ~ s(x), method = "gam") + 
   theme_classic() +
   facet_wrap(~ Class)
+
+macro_plot <- ggplot(indsums, mapping = aes(x = doy, y = macro, color = location)) +
+  geom_smooth(se = F, formula = y ~ s(x), method = "gam", mapping = aes(fill = location)) + 
+  theme_classic() +
+  labs(x = "Day of year", y = "Moth Abundance") +
+  facet_wrap(~ Class)
+
+macro_plot
 
 ggsave(filename = "outputs/adults.png")
 
