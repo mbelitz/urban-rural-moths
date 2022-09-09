@@ -54,7 +54,7 @@ moth_df_filter <- moth_df_filter %>%
 surveyDates <- read.csv("data_products/surveyDateSheet.csv") %>% 
   select(eventDate, location)
 
-surveyDates$eventDate <- lubridate::as_date(surveyDates$eventDate)
+surveyDates$eventDate <- lubridate::mdy(surveyDates$eventDate)
 surveyDates <- surveyDates %>% 
   rename(Site = location)
 surveyDates <- surveyDates %>% 
@@ -101,96 +101,177 @@ gam_function <- function(x){
   unique_sites <- unique(sdf_j$Site)
   
   # make site specific GAMS
-  baca_gam <- gam(count ~ s(doy, k = 12, bs = "cr"), 
-                  data = filter(sdf_j, Site == "Baca"))
-  baca_points <- predict.gam(baca_gam, 
-                            newdata=data.frame(doy=unique(sdf_j$doy)), type="response", se=F)
-  baca_plot <- ggplot() +
-    geom_point(data = filter(sdf_j, Site == "Baca"), aes(x = doy, y = count)) +
-    geom_line(aes(x = unique(sdf_j$doy), y = baca_points)) +
-    labs(x = "DOY", y = "Abundance") +
-    ggtitle("Baca")
+  bd <- filter(sdf_j, Site == "Baca")
+  if(length(unique(filter(bd,count>0)$doy)) >= 3){
+    
+    baca_gam <- gam(count ~ s(doy, k = 12, bs = "cr"), 
+                    data = bd)
+    baca_points <- predict.gam(baca_gam, 
+                               newdata=data.frame(doy=unique(sdf_j$doy)), type="response", se=F)
+    baca_plot <- ggplot() +
+      geom_point(data = filter(sdf_j, Site == "Baca"), aes(x = doy, y = count)) +
+      geom_line(aes(x = unique(sdf_j$doy), y = baca_points)) +
+      labs(x = "DOY", y = "Abundance") +
+      ggtitle("Baca") +
+      theme_bw()
+    
+  } else{
+    baca_plot <- ggplot() +
+      ggtitle("Baca")+
+      theme_void()
+    
+  }
   
   #joma
-  joma_gam <- gam(count ~ s(doy, k = 12, bs = "cr"), 
-                  data = filter(sdf_j, Site == "Joma"))
-  joma_points <- predict.gam(joma_gam, 
-                             newdata=data.frame(doy=unique(sdf_j$doy)), type="response", se=F)
-  joma_plot <- ggplot() +
-    geom_point(data = filter(sdf_j, Site == "Joma"), aes(x = doy, y = count)) +
-    geom_line(aes(x = unique(sdf_j$doy), y = joma_points)) +
-    labs(x = "DOY", y = "Abundance") +
-    ggtitle("Joma")
+  jd <- filter(sdf_j, Site == "Joma")
+  if(length(unique(filter(jd,count>0)$doy)) >= 3){
+    
+    joma_gam <- gam(count ~ s(doy, k = 12, bs = "cr"), 
+                    data = jd)
+    joma_points <- predict.gam(joma_gam, 
+                               newdata=data.frame(doy=unique(sdf_j$doy)), type="response", se=F)
+    joma_plot <- ggplot() +
+      geom_point(data = filter(sdf_j, Site == "Joma"), aes(x = doy, y = count)) +
+      geom_line(aes(x = unique(sdf_j$doy), y = joma_points)) +
+      labs(x = "DOY", y = "Abundance") +
+      ggtitle("Joma") +
+      theme_bw()
+    
+  } else{
+    joma_plot <- ggplot() +
+      ggtitle("Joma")+
+      theme_void()
+    
+  }
   
   #cofr
-  cofr_gam <- gam(count ~ s(doy, k = 12, bs = "cr"), 
+  cd <- filter(sdf_j, Site == "Cofr")
+  if(length(unique(filter(cd,count>0)$doy))){
+  
+    cofr_gam <- gam(count ~ s(doy, k = 12, bs = "cr"), 
                   data = filter(sdf_j, Site == "Cofr"))
-  cofr_points <- predict.gam(gam1, 
+    cofr_points <- predict.gam(cofr_gam, 
                              newdata=data.frame(doy=unique(sdf_j$doy)), type="response", se=F)
-  cofr_plot <- ggplot() +
-    geom_line(aes(x = unique(sdf_j$doy), y = cofr_points)) +
-    labs(x = "DOY", y = "Abundance") +
-    ggtitle("Cofr")
+    cofr_plot <- ggplot() +
+      geom_line(aes(x = unique(sdf_j$doy), y = cofr_points)) +
+      labs(x = "DOY", y = "Abundance") +
+      ggtitle("Cofr") } else{
+        
+        cofr_plot <- ggplot() +
+          ggtitle("Cofr")+
+          theme_void()
+        
+      }
   
   #BIVA
-  biva_gam <- gam(count ~ s(doy, k = 12, bs = "cr"), 
+  bid <- filter(sdf_j, Site == "Biva")
+  if(length(unique(filter(bid,count>0)$doy))){
+    
+    biva_gam <- gam(count ~ s(doy, k = 12, bs = "cr"), 
                   data = filter(sdf_j, Site == "Biva"))
-  biva_points <- predict.gam(gam1, 
+    biva_points <- predict.gam(biva_gam, 
                              newdata=data.frame(doy=unique(sdf_j$doy)), type="response", se=F)
-  biva_plot <- ggplot() +
-    geom_line(aes(x = unique(sdf_j$doy), y = biva_points)) +
-    labs(x = "DOY", y = "Abundance") +
-    ggtitle("Biva")
+    biva_plot <- ggplot() +
+      geom_line(aes(x = unique(sdf_j$doy), y = biva_points)) +
+      labs(x = "DOY", y = "Abundance") +
+      ggtitle("Biva") } else{
+      
+      biva_plot <- ggplot() +
+        ggtitle("Biva")+
+        theme_void()
+      
+      
+    }
   
   #bowa
-  bowa_gam <- gam(count ~ s(doy, k = 12, bs = "cr"), 
+  bod <- filter(sdf_j, Site == "Bowa")
+  if(length(unique(filter(bod,count>0)$doy))){
+    
+    bowa_gam <- gam(count ~ s(doy, k = 12, bs = "cr"), 
                   data = filter(sdf_j, Site == "Bowa"))
-  bowa_points <- predict.gam(gam1, 
+    bowa_points <- predict.gam(bowa_gam, 
                              newdata=data.frame(doy=unique(sdf_j$doy)), type="response", se=F)
-  bowa_plot <- ggplot() +
-    geom_line(aes(x = unique(sdf_j$doy), y = bowa_points)) +
-    labs(x = "DOY", y = "Abundance") +
-    ggtitle("Bowa")
+    bowa_plot <- ggplot() +
+      geom_line(aes(x = unique(sdf_j$doy), y = bowa_points)) +
+      labs(x = "DOY", y = "Abundance") +
+      ggtitle("Bowa") } else{
+        
+        bowa_plot <- ggplot() +
+          ggtitle("Bowa")+
+          theme_void()
+      
+      }
   
   #demi
+  dod <- filter(sdf_j, Site == "Demi")
+  if(length(unique(filter(dod,count>0)$doy))){
   demi_gam <- gam(count ~ s(doy, k = 12, bs = "cr"), 
                   data = filter(sdf_j, Site == "Demi"))
-  demi_points <- predict.gam(gam1, 
+  demi_points <- predict.gam(demi_gam, 
                              newdata=data.frame(doy=unique(sdf_j$doy)), type="response", se=F)
   demi_plot <- ggplot() +
     geom_line(aes(x = unique(sdf_j$doy), y = demi_points)) +
     labs(x = "DOY", y = "Abundance") +
-    ggtitle("Demi")
+    ggtitle("Demi") } else{
+      
+      demi_plot <- ggplot() +
+        ggtitle("Demi")+
+        theme_void()
+    }
   
   #Rist
-  rist_gam <- gam(count ~ s(doy, k = 12, bs = "cr"), 
+  rid <- filter(sdf_j, Site == "Rist")
+  if(length(unique(filter(rid,count>0)$doy))){
+    rist_gam <- gam(count ~ s(doy, k = 12, bs = "cr"), 
                   data = filter(sdf_j, Site == "Rist"))
-  rist_points <- predict.gam(gam1, 
+    rist_points <- predict.gam(rist_gam, 
                              newdata=data.frame(doy=unique(sdf_j$doy)), type="response", se=F)
-  rist_plot <- ggplot() +
-    geom_line(aes(x = unique(sdf_j$doy), y = rist_points)) +
-    labs(x = "DOY", y = "Abundance") +
-    ggtitle("Rist")
+    rist_plot <- ggplot() +
+      geom_line(aes(x = unique(sdf_j$doy), y = rist_points)) +
+      labs(x = "DOY", y = "Abundance") +
+      ggtitle("Rist") } else{
+        
+        rist_plot <- ggplot() +
+          ggtitle("Rist")+
+          theme_void()
+        
+      }
   
   #Prcr
-  prcr_gam <- gam(count ~ s(doy, k = 12, bs = "cr"), 
+  prd <- filter(sdf_j, Site == "Prcr")
+  if(length(unique(filter(prd,count>0)$doy))){
+    prcr_gam <- gam(count ~ s(doy, k = 12, bs = "cr"), 
                   data = filter(sdf_j, Site == "Prcr"))
-  prcr_points <- predict.gam(gam1, 
+    prcr_points <- predict.gam(prcr_gam, 
                              newdata=data.frame(doy=unique(sdf_j$doy)), type="response", se=F)
-  prcr_plot <- ggplot() +
-    geom_line(aes(x = unique(sdf_j$doy), y = prcr_points)) +
-    labs(x = "DOY", y = "Abundance") +
-    ggtitle("Prcr")
+    prcr_plot <- ggplot() +
+      geom_line(aes(x = unique(sdf_j$doy), y = prcr_points)) +
+      labs(x = "DOY", y = "Abundance") +
+      ggtitle("Prcr") } else{ 
+      
+      prcr_plot <- ggplot() +
+        ggtitle("Prcr")+
+        theme_void()
+      
+      }
   
   #Auca
+  aud <- filter(sdf_j, Site == "Auca")
+  if(length(unique(filter(aud,count>0)$doy))){
   auca_gam <- gam(count ~ s(doy, k = 12, bs = "cr"), 
                   data = filter(sdf_j, Site == "Auca"))
-  auca_points <- predict.gam(gam1, 
+  auca_points <- predict.gam(auca_gam, 
                              newdata=data.frame(doy=unique(sdf_j$doy)), type="response", se=F)
   auca_plot <- ggplot() +
     geom_line(aes(x = unique(sdf_j$doy), y = auca_points)) +
     labs(x = "DOY", y = "Abundance") +
-    ggtitle("Auca")
+    ggtitle("Auca") } else{
+      
+      auca_plot <- ggplot() +
+        ggtitle("Prcr")+
+        theme_void()
+      
+    }
     
   
   cp <- cowplot::plot_grid(baca_plot, joma_plot, cofr_plot,
@@ -198,63 +279,13 @@ gam_function <- function(x){
                            rist_plot, auca_plot, prcr_plot)
     
     
+  bw <- stringr::str_replace(x, " ", "_")
+  ggsave(filename = paste0("gamOutputs/", bw, ".png"), plot = cp, 
+         width = 7, height = 7)
     
-    }
-  
-  
-  
-  gam_m <- gam(COUNT ~ s(doy, k=12, bs="cr"), data = filter(ng_j, SITE_ID == "Rist"))
-  spar <- gam_m$sp
-  gam_points <- predict.gam(gam_m, newdata=data.frame(doy=unique(ng_j$doy)), type="response", se=F)
-  plot(unique(ng_j$doy), gam_points)
-  
-  
-  
-  
   
 }
 
 
-# get moth_df to rbms datastyle -- let's do this for one species
-ng <- moth_df %>% 
-  filter(validName == "Nadata gibbosa") %>% 
-  mutate(SITE_ID = Site,
-         DATE = lubridate::mdy(eventDate),
-         SPECIES = validName
-  ) %>% 
-  select(SITE_ID, DATE, SPECIES)
-
-# now we need to get the dates with sampling effort but no observations
-# but first we get a count by date
-ng <- ng %>% 
-  group_by(SITE_ID, DATE) %>% 
-  summarise(COUNT = n()) %>% 
-  mutate(SPECIES = ng$SPECIES[1])
-
-ng_j <- left_join(surveyDates, ng)
-
-ng_j <- ng_j %>% 
-  mutate(COUNT = if_else(
-    is.na(COUNT), true = 0, false = as.double(COUNT)
-  ),
-  SPECIES = "Nadata gibbosa")
-
-ng_j <- ng_j %>% 
-  mutate(year = year(DATE)) %>% 
-  mutate(doy = if_else(
-    condition = year == 2019,
-    true = yday(DATE),
-    false = 365 + yday(DATE)
-  ))
-
-
-## i don't think i love the regional gam. let's try the stemkovski way
-gam_m <- gam(COUNT ~ s(doy, k=12, bs="cr"), data = filter(ng_j, SITE_ID == "Rist"))
-spar <- gam_m$sp
-gam_points <- predict.gam(gam_m, newdata=data.frame(doy=unique(ng_j$doy)), type="response", se=F)
-plot(unique(ng_j$doy), gam_points)
-
-ggplot(ng_j, aes(x = doy, y = COUNT)) +
-  geom_point() +
-  geom_smooth(method = "gam", formula = y ~ s(x, bs = "cr", k = 12)) +
-  facet_wrap(~SITE_ID)
+lapply(X = spp_list$validName, FUN = gam_function)
+  
