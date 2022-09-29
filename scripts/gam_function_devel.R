@@ -68,6 +68,11 @@ surveyDates <- surveyDates %>%
                              Site == "PRCR" ~ "Prcr",
                              Site == "BOWA" ~ "Bowa"))
 
+# don't forget lunar data
+lunar.phase <- read.csv("data_products/lunarIllumination.csv") %>% 
+  mutate(Date = mdy(Date))
+surveyDates <- left_join(surveyDates, lunar.phase, by = c("eventDate" = "Date"))
+
 # write a funciton to draw predicted gams for each species X site combinations
 gam_function <- function(x){
   
@@ -98,22 +103,28 @@ gam_function <- function(x){
       false = 365 + yday(eventDate)
     ))
   
-  unique_sites <- unique(sdf_j$Site)
   
   # make site specific GAMS
   bd <- filter(sdf_j, Site == "Baca")
   if(length(unique(filter(bd,count>0)$doy)) >= 3){
     
-    baca_gam <- gam(count ~ s(doy, k = 12, bs = "cr"), 
+    baca_gam <- gam(count ~ s(doy, k = 12, bs = "cr") + s(lunar.phase, k = 3, bs = "cr"), 
                     data = bd)
     baca_points <- predict.gam(baca_gam, 
-                               newdata=data.frame(doy=unique(sdf_j$doy)), type="response", se=F)
+                               newdata=data.frame(doy=unique(sdf_j$doy),
+                                                  lunar.phase = rep(0.5, length(unique(sdf_j$doy)))), 
+                               type="response", se=F)
+    baca_points <- ifelse(baca_points < 0, 0, baca_points)
     baca_plot <- ggplot() +
       geom_point(data = filter(sdf_j, Site == "Baca"), aes(x = doy, y = count)) +
       geom_line(aes(x = unique(sdf_j$doy), y = baca_points)) +
       labs(x = "DOY", y = "Abundance") +
       ggtitle("Baca") +
       theme_bw()
+    
+    baca_df <- data.frame(doy = unique(sdf_j$doy), abund = baca_points, Site = "Baca")
+    write.csv(x = baca_df, file = paste0("gamOuputsCSV/", "GAM_Baca_", bw, ".csv"), row.names = F)
+    
     
   } else{
     baca_plot <- ggplot() +
@@ -126,16 +137,23 @@ gam_function <- function(x){
   jd <- filter(sdf_j, Site == "Joma")
   if(length(unique(filter(jd,count>0)$doy)) >= 3){
     
-    joma_gam <- gam(count ~ s(doy, k = 12, bs = "cr"), 
+    joma_gam <- gam(count ~ s(doy, k = 12, bs = "cr") + s(lunar.phase, k = 3, bs = "cr"), 
                     data = jd)
     joma_points <- predict.gam(joma_gam, 
-                               newdata=data.frame(doy=unique(sdf_j$doy)), type="response", se=F)
+                               newdata=data.frame(doy=unique(sdf_j$doy),
+                                                  lunar.phase = rep(0.5, length(unique(sdf_j$doy)))),
+                               type="response", se=F)
+    joma_points <- ifelse(joma_points < 0, 0, joma_points)
+    
     joma_plot <- ggplot() +
       geom_point(data = filter(sdf_j, Site == "Joma"), aes(x = doy, y = count)) +
       geom_line(aes(x = unique(sdf_j$doy), y = joma_points)) +
       labs(x = "DOY", y = "Abundance") +
       ggtitle("Joma") +
       theme_bw()
+    
+    joma_df <- data.frame(doy = unique(sdf_j$doy), abund = joma_points, Site = "Joma")
+    write.csv(x = joma_df, file = paste0("gamOuputsCSV/", "GAM_Joma_", bw, ".csv"), row.names = F)
     
   } else{
     joma_plot <- ggplot() +
@@ -148,14 +166,24 @@ gam_function <- function(x){
   cd <- filter(sdf_j, Site == "Cofr")
   if(length(unique(filter(cd,count>0)$doy))){
   
-    cofr_gam <- gam(count ~ s(doy, k = 12, bs = "cr"), 
+    cofr_gam <- gam(count ~ s(doy, k = 12, bs = "cr") + s(lunar.phase, k = 3, bs = "cr"), 
                   data = filter(sdf_j, Site == "Cofr"))
     cofr_points <- predict.gam(cofr_gam, 
-                             newdata=data.frame(doy=unique(sdf_j$doy)), type="response", se=F)
+                             newdata=data.frame(doy=unique(sdf_j$doy),
+                             lunar.phase = rep(0.5, length(unique(sdf_j$doy)))), 
+    type="response", se=F)
+    cofr_points <- ifelse(cofr_points < 0, 0, cofr_points)
     cofr_plot <- ggplot() +
+      geom_point(data = filter(sdf_j, Site == "Cofr"), aes(x = doy, y = count)) +
       geom_line(aes(x = unique(sdf_j$doy), y = cofr_points)) +
       labs(x = "DOY", y = "Abundance") +
-      ggtitle("Cofr") } else{
+      theme_bw() +
+      ggtitle("Cofr") 
+    
+    cofr_df <- data.frame(doy = unique(sdf_j$doy), abund = cofr_points, Site = "Cofr")
+    write.csv(x = cofr_df, file = paste0("gamOuputsCSV/", "GAM_Cofr_", bw, ".csv"), row.names = F)
+    
+    } else{
         
         cofr_plot <- ggplot() +
           ggtitle("Cofr")+
@@ -167,14 +195,24 @@ gam_function <- function(x){
   bid <- filter(sdf_j, Site == "Biva")
   if(length(unique(filter(bid,count>0)$doy))){
     
-    biva_gam <- gam(count ~ s(doy, k = 12, bs = "cr"), 
+    biva_gam <- gam(count ~ s(doy, k = 12, bs = "cr") + s(lunar.phase, k = 3, bs = "cr"), 
                   data = filter(sdf_j, Site == "Biva"))
     biva_points <- predict.gam(biva_gam, 
-                             newdata=data.frame(doy=unique(sdf_j$doy)), type="response", se=F)
+                             newdata=data.frame(doy=unique(sdf_j$doy),
+                                                lunar.phase = rep(0.5, length(unique(sdf_j$doy)))), 
+                             type="response", se=F)
+    biva_points <- ifelse(biva_points < 0, 0, biva_points)
     biva_plot <- ggplot() +
+      geom_point(data = filter(sdf_j, Site == "Biva"), aes(x = doy, y = count)) +
       geom_line(aes(x = unique(sdf_j$doy), y = biva_points)) +
       labs(x = "DOY", y = "Abundance") +
-      ggtitle("Biva") } else{
+      theme_bw() +
+      ggtitle("Biva") 
+    
+    biva_df <- data.frame(doy = unique(sdf_j$doy), abund = biva_points, Site = "Biva")
+    write.csv(x = biva_df, file = paste0("gamOuputsCSV/", "GAM_Biva_", bw, ".csv"), row.names = F)
+    
+    } else{
       
       biva_plot <- ggplot() +
         ggtitle("Biva")+
@@ -187,14 +225,25 @@ gam_function <- function(x){
   bod <- filter(sdf_j, Site == "Bowa")
   if(length(unique(filter(bod,count>0)$doy))){
     
-    bowa_gam <- gam(count ~ s(doy, k = 12, bs = "cr"), 
+    bowa_gam <- gam(count ~ s(doy, k = 12, bs = "cr") + s(lunar.phase, k = 3, bs = "cr"), 
                   data = filter(sdf_j, Site == "Bowa"))
     bowa_points <- predict.gam(bowa_gam, 
-                             newdata=data.frame(doy=unique(sdf_j$doy)), type="response", se=F)
+                             newdata=data.frame(doy=unique(sdf_j$doy),
+                                                lunar.phase = rep(0.5, length(unique(sdf_j$doy)))), 
+                             type="response", se=F)
+    bowa_points <- ifelse(bowa_points < 0, 0, bowa_points)
+    
     bowa_plot <- ggplot() +
+      geom_point(data = filter(sdf_j, Site == "Bowa"), aes(x = doy, y = count)) +
       geom_line(aes(x = unique(sdf_j$doy), y = bowa_points)) +
       labs(x = "DOY", y = "Abundance") +
-      ggtitle("Bowa") } else{
+      theme_bw() +
+      ggtitle("Bowa") 
+    
+    bowa_df <- data.frame(doy = unique(sdf_j$doy), abund = bowa_points, Site = "Bowa")
+    write.csv(x = bowa_df, file = paste0("gamOuputsCSV/", "GAM_Bowa_", bw, ".csv"), row.names = F)
+    
+    } else{
         
         bowa_plot <- ggplot() +
           ggtitle("Bowa")+
@@ -205,14 +254,24 @@ gam_function <- function(x){
   #demi
   dod <- filter(sdf_j, Site == "Demi")
   if(length(unique(filter(dod,count>0)$doy))){
-  demi_gam <- gam(count ~ s(doy, k = 12, bs = "cr"), 
+  demi_gam <- gam(count ~ s(doy, k = 12, bs = "cr") + s(lunar.phase, k = 3, bs = "cr"), 
                   data = filter(sdf_j, Site == "Demi"))
   demi_points <- predict.gam(demi_gam, 
-                             newdata=data.frame(doy=unique(sdf_j$doy)), type="response", se=F)
+                             newdata=data.frame(doy=unique(sdf_j$doy),
+                                                lunar.phase = rep(0.5, length(unique(sdf_j$doy)))), 
+                             type="response", se=F)
+  demi_points <- ifelse(demi_points < 0, 0, demi_points)
   demi_plot <- ggplot() +
+    geom_point(data = filter(sdf_j, Site == "Demi"), aes(x = doy, y = count)) +
     geom_line(aes(x = unique(sdf_j$doy), y = demi_points)) +
     labs(x = "DOY", y = "Abundance") +
-    ggtitle("Demi") } else{
+    theme_bw() +
+    ggtitle("Demi") 
+  
+  demi_df <- data.frame(doy = unique(sdf_j$doy), abund = demi_points, Site = "Demi")
+  write.csv(x = demi_df, file = paste0("gamOuputsCSV/", "GAM_Demi_", bw, ".csv"), row.names = F)
+  
+  } else{
       
       demi_plot <- ggplot() +
         ggtitle("Demi")+
@@ -222,14 +281,24 @@ gam_function <- function(x){
   #Rist
   rid <- filter(sdf_j, Site == "Rist")
   if(length(unique(filter(rid,count>0)$doy))){
-    rist_gam <- gam(count ~ s(doy, k = 12, bs = "cr"), 
+    rist_gam <- gam(count ~ s(doy, k = 12, bs = "cr") + s(lunar.phase, k = 3, bs = "cr"), 
                   data = filter(sdf_j, Site == "Rist"))
     rist_points <- predict.gam(rist_gam, 
-                             newdata=data.frame(doy=unique(sdf_j$doy)), type="response", se=F)
+                             newdata=data.frame(doy=unique(sdf_j$doy),
+                                                lunar.phase = rep(0.5, length(unique(sdf_j$doy)))), 
+                             type="response", se=F)
+    rist_points <- ifelse(rist_points < 0, 0, rist_points)
     rist_plot <- ggplot() +
+      geom_point(data = filter(sdf_j, Site == "Rist"), aes(x = doy, y = count)) +
       geom_line(aes(x = unique(sdf_j$doy), y = rist_points)) +
       labs(x = "DOY", y = "Abundance") +
-      ggtitle("Rist") } else{
+      theme_bw() +
+      ggtitle("Rist") 
+    
+    rist_df <- data.frame(doy = unique(sdf_j$doy), abund = rist_points, Site = "Rist")
+    write.csv(x = rist_df, file = paste0("gamOuputsCSV/", "GAM_Rist_", bw, ".csv"), row.names = F)
+    
+    } else{
         
         rist_plot <- ggplot() +
           ggtitle("Rist")+
@@ -240,14 +309,24 @@ gam_function <- function(x){
   #Prcr
   prd <- filter(sdf_j, Site == "Prcr")
   if(length(unique(filter(prd,count>0)$doy))){
-    prcr_gam <- gam(count ~ s(doy, k = 12, bs = "cr"), 
+    prcr_gam <- gam(count ~ s(doy, k = 12, bs = "cr") + s(lunar.phase, k = 3, bs = "cr"), 
                   data = filter(sdf_j, Site == "Prcr"))
     prcr_points <- predict.gam(prcr_gam, 
-                             newdata=data.frame(doy=unique(sdf_j$doy)), type="response", se=F)
+                             newdata=data.frame(doy=unique(sdf_j$doy),
+                                                lunar.phase = rep(0.5, length(unique(sdf_j$doy)))), 
+                             type="response", se=F)
+    prcr_points <- ifelse(prcr_points < 0, 0, prcr_points)
     prcr_plot <- ggplot() +
+      geom_point(data = filter(sdf_j, Site == "Prcr"), aes(x = doy, y = count)) +
       geom_line(aes(x = unique(sdf_j$doy), y = prcr_points)) +
       labs(x = "DOY", y = "Abundance") +
-      ggtitle("Prcr") } else{ 
+      theme_bw() +
+      ggtitle("Prcr") 
+    
+    prcr_df <- data.frame(doy = unique(sdf_j$doy), abund = prcr_points, Site = "Prcr")
+    write.csv(x = prcr_df, file = paste0("gamOuputsCSV/", "GAM_Prcr_", bw, ".csv"), row.names = F)
+    
+    } else{ 
       
       prcr_plot <- ggplot() +
         ggtitle("Prcr")+
@@ -258,14 +337,24 @@ gam_function <- function(x){
   #Auca
   aud <- filter(sdf_j, Site == "Auca")
   if(length(unique(filter(aud,count>0)$doy))){
-  auca_gam <- gam(count ~ s(doy, k = 12, bs = "cr"), 
+  auca_gam <- gam(count ~ s(doy, k = 12, bs = "cr") + s(lunar.phase, k = 3, bs = "cr"), 
                   data = filter(sdf_j, Site == "Auca"))
   auca_points <- predict.gam(auca_gam, 
-                             newdata=data.frame(doy=unique(sdf_j$doy)), type="response", se=F)
+                             newdata=data.frame(doy=unique(sdf_j$doy),
+                                                lunar.phase = rep(0.5, length(unique(sdf_j$doy)))), 
+                             type="response", se=F)
+  auca_points <- ifelse(auca_points < 0, 0, auca_points)
   auca_plot <- ggplot() +
+    geom_point(data = filter(sdf_j, Site == "Auca"), aes(x = doy, y = count)) +
     geom_line(aes(x = unique(sdf_j$doy), y = auca_points)) +
     labs(x = "DOY", y = "Abundance") +
-    ggtitle("Auca") } else{
+    theme_bw() +
+    ggtitle("Auca") 
+  
+  auca_df <- data.frame(doy = unique(sdf_j$doy), abund = auca_points, Site = "Auca")
+  write.csv(x = auca_df, file = paste0("gamOuputsCSV/", "GAM_Auca_", bw, ".csv"), row.names = F)
+  
+  } else{
       
       auca_plot <- ggplot() +
         ggtitle("Prcr")+
@@ -280,12 +369,14 @@ gam_function <- function(x){
     
     
   bw <- stringr::str_replace(x, " ", "_")
-  ggsave(filename = paste0("gamOutputs/", bw, ".png"), plot = cp, 
+  ggsave(filename = paste0("gamOutputs_lunar.phaseIllumination/", bw, ".png"), plot = cp, 
          width = 7, height = 7)
     
   
 }
 
+lapply(X = "Nadata gibbosa", FUN = gam_function)
 
-lapply(X = spp_list$validName, FUN = gam_function)
+spp_list <- unique(enoughSites2$validName)
+lapply(X = spp_list, FUN = gam_function)
   
